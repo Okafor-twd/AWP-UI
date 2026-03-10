@@ -1,3 +1,6 @@
+# AWP UI
+Entirely ported to use with Syn-Z API, please help this project with better coding too.
+
 # Tauri + Vanilla
 
 This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
