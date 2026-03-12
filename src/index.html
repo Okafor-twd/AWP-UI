@@ -36,7 +36,6 @@
         try {
           var path = window.location.pathname || "";
           if (path && path !== "/") {
-            // Only rewrite once for local preview; avoid breaking real deployments.
             window.history.replaceState(null, "", "/");
           }
         } catch (e) {

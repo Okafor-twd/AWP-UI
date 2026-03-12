@@ -19,6 +19,42 @@ fn get_exe_dir() -> String {
         .to_string_lossy()
         .to_string()
 }
+use serde_json::Value;
+
+#[tauri::command]
+fn get_setting_topmost() -> bool {
+    let exe_dir = std::env::current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_path_buf();
+
+    let settings_path = exe_dir.join("settings").join("settings.json");
+
+    let contents = fs::read_to_string(settings_path).unwrap_or_default();
+    let json: Value = serde_json::from_str(&contents).unwrap_or(Value::Null);
+
+    json["topmost"].as_bool().unwrap_or(false)
+}
+
+
+#[tauri::command]
+fn set_setting_topmost(value: bool) {
+    let exe_dir = std::env::current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_path_buf();
+
+     let settings_path = exe_dir.join("settings").join("settings.json");
+
+    let contents = fs::read_to_string(&settings_path).unwrap_or("{}".to_string());
+    let mut json: Value = serde_json::from_str(&contents).unwrap_or(Value::Object(Default::default()));
+
+    json["topmost"] = Value::Bool(value);
+
+    fs::write(settings_path, json.to_string()).unwrap();
+}
 
 #[tauri::command]
 fn execute_script(script: String, pid: u32) -> u8 {
@@ -152,13 +188,13 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             get_exe_dir, open_folder, launch_robloxproc, get_roblox_pids, execute_script,
-            is_synz, open_synz_folder])
+            is_synz, open_synz_folder, get_setting_topmost, set_setting_topmost])
         .setup(|_app| {
             let exe_path = env::current_exe().expect("GetExecutable Fail.");
             let exe_dir = exe_path.parent().expect("GetDir Fail.");
             let _ = env::set_current_dir(exe_dir);
 
-            let folders = ["workspace", "scripts", "autoexec"];
+            let folders = ["workspace", "scripts", "autoexec", "settings"];
             for folder in &folders {
                 let folder_path = exe_dir.join(folder);
                 if !folder_path.exists() {
