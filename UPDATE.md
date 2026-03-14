@@ -7,7 +7,7 @@
 # Console Redirection:
 ![Console Redirection Screenshot](<Screenshot 2026-03-14 125444.png>)
 
--- Enable these to work
+## Enable these to work.
 ![scrn](image-1.png)
 
 Next update will fix monaco related thing.
