@@ -8,7 +8,6 @@ use sysinfo::System;
 use std::sync::Mutex;
 use tauri::{State, Emitter};
 use serde::Serialize;
-//use mslnk::ShellLink;
 
 pub struct SysState(pub Mutex<System>);
 
@@ -22,6 +21,16 @@ fn get_exe_dir() -> String {
         .unwrap()
         .to_string_lossy()
         .to_string()
+}
+
+#[tauri::command]
+fn rename_file(old_path: String, new_path: String) -> Result<(), String> {
+    std::fs::rename(&old_path, &new_path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn delete_file(path: String) -> Result<(), String> {
+    std::fs::remove_file(&path).map_err(|e| e.to_string())
 }
 
 use serde_json::Value;
@@ -254,6 +263,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             // utility
             get_exe_dir,
+            rename_file,
+            delete_file,
             open_folder,
             open_synz_folder,
             launch_robloxproc,
